@@ -22,13 +22,20 @@ reference `papi.yexe.xyz` directly; the only place it appears is the Worker's
 
 ## Frontend on Cloudflare Pages
 
-Build the frontend and required Scramjet assets for Pages locally:
+The Pages project `yproxy` is connected to this repository through the
+Cloudflare GitHub integration. Every push to `main` automatically runs:
 
 ```sh
-pnpm pages:build
+pnpm pages:build:cloudflare
 ```
 
-Use this Cloudflare Pages Git configuration:
+and publishes `cloudflare/pages` to production. Preview deployments are
+enabled for other branches. The v3 build image provides Node 22 and pnpm
+10.12.1 (from `packageManager`), so no build environment variables are
+required.
+
+Use this Cloudflare Pages Git configuration if the project has to be
+recreated:
 
 ```txt
 Framework preset: None
@@ -36,13 +43,6 @@ Production branch: main
 Build command: pnpm pages:build:cloudflare
 Build output directory: cloudflare/pages
 Root directory: /
-```
-
-Add these Pages build environment variables:
-
-```txt
-NODE_VERSION=22
-PNPM_VERSION=10.12.1
 ```
 
 The Pages output generator writes a Cloudflare `_headers` file that keeps the
@@ -60,9 +60,9 @@ separate origins, the Worker must allow `https://yproxy.pages.dev` through CORS.
 
 ## Worker Git deploy
 
-Connect the existing Worker named `webproxy` to the same GitHub
-repository. Use the repository root so Wrangler can read the root
-`wrangler.toml`:
+The Worker `webproxy` is (or should be) connected to the same GitHub
+repository: Workers & Pages → `webproxy` → Settings → Builds → Connect.
+Use the repository root so Wrangler can read the root `wrangler.toml`:
 
 ```txt
 Root directory: /

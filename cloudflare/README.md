@@ -1,6 +1,8 @@
 # Cloudflare deployment folders
 
-Use these paths in Cloudflare Git integrations.
+The Pages project `yproxy` and the Worker `webproxy` are connected to this
+GitHub repository (`y-exe/webproxy`) through Cloudflare Git integrations.
+Pushes to `main` build and deploy automatically.
 
 ```txt
 Pages build command: pnpm pages:build:cloudflare
@@ -15,7 +17,7 @@ Worker deploy command: npx wrangler deploy
 Public endpoints:
 
 ```txt
-Frontend: https://yproxy.pages.dev
+Frontend: https://yproxy.pages.dev (+ https://proxy.yexe.xyz)
 Worker: https://webproxy.yexe.workers.dev
 VPS bridge (Worker-facing only): https://papi.yexe.xyz
 ```
@@ -24,9 +26,5 @@ VPS bridge (Worker-facing only): https://papi.yexe.xyz
 it; all traffic flows through the `webproxy` Worker. Outbound fetching from the
 backend egresses via the VPS IP (SOCKS5), never from the home IP.
 
-Recommended Pages environment variables:
-
-```txt
-NODE_VERSION=22
-PNPM_VERSION=10.12.1
-```
+The Pages build image (v3) provides Node 22 and picks pnpm 10.12.1 up from
+`packageManager`, so no extra build environment variables are needed.
