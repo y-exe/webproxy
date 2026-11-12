@@ -1,47 +1,50 @@
 {
-	"name": "scramjet-root",
-	"version": "1.0.0",
-	"description": "",
-	"type": "module",
-	"keywords": [],
-	"author": "Mercury Workshop",
-	"license": "AGPL-3.0-only",
-	"packageManager": "pnpm@10.12.1",
-	"scripts": {
-		"build": "node --import tsx ./node_modules/@rspack/cli/bin/rspack.js build --mode production",
-		"pages:build": "pnpm rewriter:build && pnpm build && pnpm --filter @mercuryworkshop/scramjet-demo build && node scripts/prepare-pages-output.mjs",
-		"pages:build:cloudflare": "bash scripts/cloudflare-pages-build.sh",
-		"worker:deploy:cloudflare": "pnpm dlx wrangler deploy --config cloudflare/worker/wrangler.toml",
-		"dev": "tsx devserver.ts",
-		"backend:edge": "tsx server/edgeBackend.ts",
-		"migrate:cookies": "node database/migrate-cookies.mjs",
-		"rewriter:build": "pnpm --filter @mercuryworkshop/scramjet rewriter:build",
-		"preinstall": "npx only-allow pnpm"
-	},
-	"pnpm": {
-		"overrides": {
-			"htmlparser2": "12.0.0"
-		},
-		"patchedDependencies": {
-			"htmlparser2@12.0.0": "patches/htmlparser2@12.0.0.patch"
-		}
-	},
-	"dependencies": {
-		"dotenv": "^17.2.3",
-		"pg": "^8.16.3",
-		"prettier": "^3.6.2"
-	},
-	"devDependencies": {
-		"@mercuryworkshop/wisp-js": "catalog:",
-		"@rsdoctor/rspack-plugin": "^1.4.0",
-		"@rspack/cli": "^1.5.8",
-		"@rspack/core": "^1.5.8",
-		"chafa-wasm": "^0.3.1",
-		"chalk": "^5.6.2",
-		"eslint": "^10.2.0",
-		"ts-checker-rspack-plugin": "^1.1.6",
-		"tsc-alias": "^1.8.16",
-		"tsx": "^4.21.0",
-		"vite": "^7.3.0"
-	}
+  "name": "scramjet-root",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "keywords": [],
+  "author": "Mercury Workshop",
+  "license": "AGPL-3.0-only",
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "build": "node --import tsx ./node_modules/@rspack/cli/bin/rspack.js build --mode production",
+    "pages:build": "pnpm rewriter:build && pnpm build && pnpm --filter @mercuryworkshop/scramjet-demo build && node scripts/prepare-pages-output.mjs",
+    "pages:build:cloudflare": "bash scripts/cloudflare-pages-build.sh",
+    "worker:deploy:cloudflare": "pnpm dlx wrangler deploy --config cloudflare/worker/wrangler.toml",
+    "dev": "tsx devserver.ts",
+    "dev:debug": "DEBUG=1 tsx devserver.ts",
+    "backend:edge": "tsx server/edgeBackend.ts",
+    "migrate:cookies": "node database/migrate-cookies.mjs",
+    "rewriter:build": "pnpm --filter @mercuryworkshop/scramjet rewriter:build",
+    "test:package": "ava tests/ci/packageValidation.js",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "ava": {
+    "files": [
+      "tests/ci/**/*.js"
+    ],
+    "verbose": true
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "pg": "^8.16.3",
+    "prettier": "^3.6.2"
+  },
+  "devDependencies": {
+    "@mercuryworkshop/wisp-js": "catalog:",
+    "@rspack/cli": "^1.5.8",
+    "@rspack/core": "^1.5.8",
+    "@fastify/deepmerge": "^3.2.1",
+    "@rsdoctor/rspack-plugin": "^1.4.0",
+    "ts-checker-rspack-plugin": "^1.1.6",
+    "tsc-alias": "^1.8.16",
+    "chafa-wasm": "^0.3.1",
+    "chalk": "^5.6.2",
+    "eslint": "^10.2.0",
+    "tsx": "^4.21.0",
+    "vite": "^7.3.0",
+    "ava": "^6.4.1",
+    "glob": "^13.0.6"
+  }
 }

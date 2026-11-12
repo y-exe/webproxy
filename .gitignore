@@ -1,10 +1,9 @@
-meta.json
 node_modules
+dist
 packages/core/rewriter/target
 packages/core/rewriter/wasm/out
 packages/core/rewriter/*.js
 packages/core/blob-report
-dist
 cloudflare/pages
 .env
 .cookie-store
@@ -14,4 +13,5 @@ cloudflare/pages
 /proxy-home*.png
 /ui-check*.png
 
+packages/core/README.md
 packages/runway/coverage

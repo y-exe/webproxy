@@ -21,15 +21,15 @@ jobs:
       controller_version_changed: ${{ steps.check-scramjet-controller.outputs.version_changed }}
       controller_new_version: ${{ steps.check-scramjet-controller.outputs.new_version }}
       controller_tag_arg: ${{ steps.check-scramjet-controller.outputs.tag_arg }}
+      utils_version_changed: ${{ steps.check-scramjet-utils.outputs.version_changed }}
+      utils_new_version: ${{ steps.check-scramjet-utils.outputs.new_version }}
+      utils_tag_arg: ${{ steps.check-scramjet-utils.outputs.tag_arg }}
       bootstrap_version_changed: ${{ steps.check-bootstrap.outputs.version_changed }}
       bootstrap_new_version: ${{ steps.check-bootstrap.outputs.new_version }}
       bootstrap_tag_arg: ${{ steps.check-bootstrap.outputs.tag_arg }}
       create_proxy_app_version_changed: ${{ steps.check-create-proxy-app.outputs.version_changed }}
       create_proxy_app_new_version: ${{ steps.check-create-proxy-app.outputs.new_version }}
       create_proxy_app_tag_arg: ${{ steps.check-create-proxy-app.outputs.tag_arg }}
-      utils_version_changed: ${{ steps.check-scramjet-utils.outputs.version_changed }}
-      utils_new_version: ${{ steps.check-scramjet-utils.outputs.new_version }}
-      utils_tag_arg: ${{ steps.check-scramjet-utils.outputs.tag_arg }}
 
     steps:
       - name: Checkout Code
@@ -62,6 +62,27 @@ jobs:
           CURRENT_VERSION=$(jq -r .version packages/controller/package.json)
           echo "Current version: $CURRENT_VERSION"
           LATEST_VERSION=$(npm view @mercuryworkshop/scramjet-controller versions --json | jq -r '.[-1]' || echo "0.0.0")
+          echo "Latest NPM version: $LATEST_VERSION"
+
+          if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ];
+          then
+            echo "Version changed"
+            echo "version_changed=true" >> "$GITHUB_OUTPUT"
+            echo "new_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+            TAG_ARG=""
+            if [[ "$CURRENT_VERSION" == *-* ]]; then PRE="${CURRENT_VERSION#*-}"; TAG_ARG="--tag ${PRE%%[.+]*}"; fi
+            echo "tag_arg=$TAG_ARG" >> "$GITHUB_OUTPUT"
+          else
+            echo "Version not changed"
+            echo "version_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check the version (scramjet/utils)
+        id: check-scramjet-utils
+        run: |
+          CURRENT_VERSION=$(jq -r .version packages/utils/package.json)
+          echo "Current version: $CURRENT_VERSION"
+          LATEST_VERSION=$(npm view @mercuryworkshop/scramjet-utils versions --json | jq -r '.[-1]' || echo "0.0.0")
           echo "Latest NPM version: $LATEST_VERSION"
 
           if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ];
@@ -119,27 +140,6 @@ jobs:
             echo "version_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check the version (scramjet-utils)
-        id: check-scramjet-utils
-        run: |
-          CURRENT_VERSION=$(jq -r .version packages/utils/package.json)
-          echo "Current version: $CURRENT_VERSION"
-          LATEST_VERSION=$(npm view @mercuryworkshop/scramjet-utils versions --json | jq -r '.[-1]' || echo "0.0.0")
-          echo "Latest NPM version: $LATEST_VERSION"
-
-          if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ];
-          then
-            echo "Version changed"
-            echo "version_changed=true" >> "$GITHUB_OUTPUT"
-            echo "new_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
-            TAG_ARG=""
-            if [[ "$CURRENT_VERSION" == *-* ]]; then PRE="${CURRENT_VERSION#*-}"; TAG_ARG="--tag ${PRE%%[.+]*}"; fi
-            echo "tag_arg=$TAG_ARG" >> "$GITHUB_OUTPUT"
-          else
-            echo "Version not changed"
-            echo "version_changed=false" >> "$GITHUB_OUTPUT"
-          fi
-
   build:
     name: Build Scramjet
     runs-on: ubuntu-latest
@@ -175,6 +175,10 @@ jobs:
         run: pnpm pack
         working-directory: packages/controller
 
+      - name: Pack Scramjet Utils
+        run: pnpm pack
+        working-directory: packages/utils
+
       - name: Pack Proxy Bootstrap
         run: pnpm pack
         working-directory: packages/bootstrap
@@ -182,10 +186,6 @@ jobs:
       - name: Pack create-proxy-app
         run: pnpm pack
         working-directory: packages/create-proxy-app
-
-      - name: Pack Scramjet Utils
-        run: pnpm pack
-        working-directory: packages/utils
 
       - name: Upload Artifact (scramjet/core)
         uses: actions/upload-artifact@v4
@@ -211,6 +211,18 @@ jobs:
           name: scramjet-controller-package
           path: packages/controller/mercuryworkshop-scramjet-controller-*.tgz
 
+      - name: Upload Artifact (scramjet/utils)
+        uses: actions/upload-artifact@v4
+        with:
+          name: scramjet-utils
+          path: packages/utils/dist/*
+
+      - name: Upload Artifact (scramjet/utils) (packaged)
+        uses: actions/upload-artifact@v4
+        with:
+          name: scramjet-utils-package
+          path: packages/utils/mercuryworkshop-scramjet-utils-*.tgz
+
       - name: Upload Artifact (proxy-bootstrap) (packaged)
         uses: actions/upload-artifact@v4
         with:
@@ -222,18 +234,6 @@ jobs:
         with:
           name: create-proxy-app-package
           path: packages/create-proxy-app/create-proxy-app-*.tgz
-
-      - name: Upload Artifact (scramjet-utils)
-        uses: actions/upload-artifact@v4
-        with:
-          name: scramjet-utils
-          path: packages/utils/dist/*
-
-      - name: Upload Artifact (scramjet-utils) (packaged)
-        uses: actions/upload-artifact@v4
-        with:
-          name: scramjet-utils-package
-          path: packages/utils/mercuryworkshop-scramjet-utils-*.tgz
 
   package-validation:
     name: Validate Package Structure
@@ -268,14 +268,12 @@ jobs:
 
       - name: Run package validation tests
         run: pnpm test:package
-        working-directory: packages/core
 
   tests:
     name: Run Scramjet Tests
     runs-on: ubuntu-latest
     needs: [build, package-validation]
-    env:
-      PLAYWRIGHT_BROWSERS_PATH: .playwright-browsers
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -306,17 +304,7 @@ jobs:
           name: scramjet-controller
           path: packages/controller/dist
 
-      - name: Cache Playwright browsers
-        id: pw-browsers-cache
-        uses: actions/cache@v4
-        with:
-          path: .playwright-browsers
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
       - name: Install Playwright Chromium
-        if: steps.pw-browsers-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
         working-directory: packages/runway
 
@@ -325,7 +313,7 @@ jobs:
         working-directory: packages/runway
 
   rewritertests:
-    name: "Run Rewriter Tests"
+    name: Run Rewriter Tests
     runs-on: ubuntu-latest
     needs: [build, package-validation]
 
@@ -343,7 +331,8 @@ jobs:
           shared-key: "rewriter"
 
       - name: Run Tests
-        run: cd packages/core/rewriter/native && cargo test
+        run: cargo test
+        working-directory: packages/core/rewriter/native
 
   upload:
     name: Upload release
@@ -401,6 +390,7 @@ jobs:
           commit: main
           body: "${{ github.event.head_commit.url }} ${{ github.event.head_commit.message }}"
           artifacts: "mercuryworkshop-scramjet-controller-*.tgz"
+          makeLatest: false
 
   publish:
     name: Publish Scramjet to NPM
@@ -433,6 +423,13 @@ jobs:
           name: scramjet-controller-package
           path: .
 
+      - name: Get artifacts (scramjet/utils)
+        if: needs.version-check.outputs.utils_version_changed == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: scramjet-utils-package
+          path: .
+
       - name: Get artifacts (proxy-bootstrap)
         if: needs.version-check.outputs.bootstrap_version_changed == 'true'
         uses: actions/download-artifact@v4
@@ -447,13 +444,6 @@ jobs:
           name: create-proxy-app-package
           path: .
 
-      - name: Get artifacts (scramjet-utils)
-        if: needs.version-check.outputs.utils_version_changed == 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: scramjet-utils-package
-          path: .
-
       - name: Publish Scramjet
         if: needs.version-check.outputs.scramjet_version_changed == 'true'
         run: pnpm publish mercuryworkshop-scramjet-${{ needs.version-check.outputs.scramjet_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.scramjet_tag_arg }}
@@ -461,6 +451,10 @@ jobs:
       - name: Publish Scramjet Controller
         if: needs.version-check.outputs.controller_version_changed == 'true'
         run: pnpm publish mercuryworkshop-scramjet-controller-${{ needs.version-check.outputs.controller_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.controller_tag_arg }}
+
+      - name: Publish Scramjet Utils
+        if: needs.version-check.outputs.utils_version_changed == 'true'
+        run: pnpm publish mercuryworkshop-scramjet-utils-${{ needs.version-check.outputs.utils_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.utils_tag_arg }}
 
       - name: Publish Proxy Bootstrap
         if: needs.version-check.outputs.bootstrap_version_changed == 'true'
@@ -470,6 +464,77 @@ jobs:
         if: needs.version-check.outputs.create_proxy_app_version_changed == 'true'
         run: pnpm publish create-proxy-app-${{ needs.version-check.outputs.create_proxy_app_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.create_proxy_app_tag_arg }}
 
-      - name: Publish Scramjet Utils
-        if: needs.version-check.outputs.utils_version_changed == 'true'
-        run: pnpm publish mercuryworkshop-scramjet-utils-${{ needs.version-check.outputs.utils_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.utils_tag_arg }}
+  frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs: [build, package-validation]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Get artifacts (scramjet/core)
+        uses: actions/download-artifact@v4
+        with:
+          name: scramjet
+          path: packages/core/dist
+
+      - name: Get artifacts (scramjet/controller)
+        uses: actions/download-artifact@v4
+        with:
+          name: scramjet-controller
+          path: packages/controller/dist
+
+      - name: Get artifacts (scramjet/utils)
+        uses: actions/download-artifact@v4
+        with:
+          name: scramjet-utils
+          path: packages/utils/dist
+
+      - name: Build Frontend
+        run: VITE_WISP_URL="wss://anura.pro/" pnpm build
+        working-directory: packages/demo
+
+      - name: Upload Artifact (frontend)
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend
+          path: ./packages/demo/dist
+
+  pages:
+    name: Upload to Github Pages
+    runs-on: ubuntu-latest
+    needs: [frontend, tests, rewritertests]
+    permissions: write-all
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Get artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend
+          path: .
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to github
+        id: deployment
+        uses: actions/deploy-pages@v4
