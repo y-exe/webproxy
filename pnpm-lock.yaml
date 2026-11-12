@@ -16,8 +16,8 @@ catalogs:
       specifier: 1.0.2
       version: 1.0.2
     '@mercuryworkshop/wisp-js':
-      specifier: 0.4.1
-      version: 0.4.1
+      specifier: 0.5.3
+      version: 0.5.3
 
 overrides:
   htmlparser2: 12.0.0
@@ -43,13 +43,13 @@ importers:
     devDependencies:
       '@mercuryworkshop/wisp-js':
         specifier: 'catalog:'
-        version: 0.4.1
+        version: 0.5.3
       '@rsdoctor/rspack-plugin':
         specifier: ^1.4.0
-        version: 1.4.0(@rsbuild/core@1.6.14)(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.0.9)(webpack@5.104.1)
+        version: 1.4.0(@rsbuild/core@1.6.14)(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.2.0)(webpack@5.104.1)
       '@rspack/cli':
         specifier: ^1.5.8
-        version: 1.5.8(@rspack/core@1.6.7(@swc/helpers@0.5.17))(@types/express@4.17.24)(bufferutil@4.0.9)(webpack@5.104.1)
+        version: 1.5.8(@rspack/core@1.6.7(@swc/helpers@0.5.17))(@types/express@4.17.24)(bufferutil@4.2.0)(webpack@5.104.1)
       '@rspack/core':
         specifier: ^1.5.8
         version: 1.6.7(@swc/helpers@0.5.17)
@@ -79,7 +79,7 @@ importers:
     dependencies:
       '@mercuryworkshop/wisp-js':
         specifier: 'catalog:'
-        version: 0.4.1
+        version: 0.5.3
       tar:
         specifier: ^7.5.1
         version: 7.5.1
@@ -301,7 +301,7 @@ importers:
         version: link:../controller
       '@mercuryworkshop/wisp-js':
         specifier: 'catalog:'
-        version: 0.4.1
+        version: 0.5.3
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -313,7 +313,7 @@ importers:
         version: 1.56.1
       ws:
         specifier: ^8.18.3
-        version: 8.18.3(bufferutil@4.0.9)
+        version: 8.18.3(bufferutil@4.2.0)
     devDependencies:
       '@types/express':
         specifier: ^4.17.21
@@ -891,8 +891,8 @@ packages:
     resolution: {integrity: sha512-rtUSxW8krWS5RGtcFomnoQl/9nrsDnUh7duPcJeQtIqnt5txB7AZJEa6N87CD7UXJzCZVijr1mUHwZy0kHJ+fQ==}
     hasBin: true
 
-  '@mercuryworkshop/wisp-js@0.4.1':
-    resolution: {integrity: sha512-104LwiXiuhti/e32gmv0Da0u0yuLFDHX8JawCzleTPWJ5t5qTX4EYi4E7/ucbjBPN9wwVPWHE5g5yGqzl/NzQA==}
+  '@mercuryworkshop/wisp-js@0.5.3':
+    resolution: {integrity: sha512-kEvnBt57x0g39HPatsYWXXboDYx79/eQxuGD2Ym9c5+LFGbKZa2Hbv6neBhwhlS23u73Y6ZTFqb2VVJNUoejGg==}
     hasBin: true
 
   '@module-federation/error-codes@0.21.6':
@@ -1721,6 +1721,10 @@ packages:
     resolution: {integrity: sha512-WDtdLmJvAuNNPzByAYpRo2rF1Mmradw6gvWsQKf63476DDXmomT9zUiGypLcG4ibIM67vhAj8jJRdbmEws2Aqw==}
     engines: {node: '>=6.14.2'}
 
+  bufferutil@4.2.0:
+    resolution: {integrity: sha512-gyy58jET9kst2IGyBKb96a4Y2bPGTHXGyCd0/1eqIV3hr1Sz3VxtA8n7bXh8fLIuE2K6Z0Upax5a5Msx+HU1IQ==}
+    engines: {node: '>=6.14.2'}
+
   bundle-name@4.1.0:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
     engines: {node: '>=18'}
@@ -1843,6 +1847,10 @@ packages:
   commander@14.0.2:
     resolution: {integrity: sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==}
     engines: {node: '>=20'}
+
+  commander@15.1.0:
+    resolution: {integrity: sha512-cgnQ88TRrWcC7pVq46RzJVRMktu3W2RcbnoidnfBsl1bmDCBwJS/udcIZpKoCrbAYYaCqsz1yZCVIgbIaU3ddQ==}
+    engines: {node: '>=22.12.0'}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -2672,8 +2680,8 @@ packages:
     resolution: {integrity: sha512-Ag3wB2o37wslZS19hZqorUnrnzSkpOVy+IiiDEiTqNubEYpYuHWIf6K4psgN2ZWKExS4xhVCrRVfb/wfW8fWJA==}
     engines: {node: '>= 10'}
 
-  ipaddr.js@2.3.0:
-    resolution: {integrity: sha512-Zv/pA+ciVFbCSBBjGfaKUya/CcGmUHzTydLMaTwrUUEM2DIEO3iZvueGxmacvmN50fGpGVKeTXpb2LcYQxeVdg==}
+  ipaddr.js@2.5.0:
+    resolution: {integrity: sha512-aq+t5NAc+cS6rZQQVWC2x98CPqGtKKTMDd4Gaodv0wShnItdKg/51djkGJ1hqH+Oy0ivDftCbSLCQob8zso01w==}
     engines: {node: '>= 10'}
 
   irregular-plurals@3.5.0:
@@ -4364,6 +4372,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.22.2:
+    resolution: {integrity: sha512-/rEZ2ejown2N5gxVTHUu9bVVC7ttu0/Tgzf5hbTOixR3Fs7mbbXgn2DbdbcKgJOmpQMtrIUWivtYuVMnp/W/yA==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   wsl-utils@0.1.0:
     resolution: {integrity: sha512-h3Fbisa2nKGPxCpm89Hk33lBLsnaGBvctQopaBSOW/uIs6FTe1ATyAnKFJrzVs9vpGdsTe73WF3V4lIsk4Gacw==}
     engines: {node: '>=18'}
@@ -4848,12 +4868,12 @@ snapshots:
     transitivePeerDependencies:
       - utf-8-validate
 
-  '@mercuryworkshop/wisp-js@0.4.1':
+  '@mercuryworkshop/wisp-js@0.5.3':
     dependencies:
-      bufferutil: 4.0.9
-      commander: 14.0.2
-      ipaddr.js: 2.3.0
-      ws: 8.18.3(bufferutil@4.0.9)
+      bufferutil: 4.2.0
+      commander: 15.1.0
+      ipaddr.js: 2.5.0
+      ws: 8.22.2(bufferutil@4.2.0)
     transitivePeerDependencies:
       - utf-8-validate
 
@@ -5072,11 +5092,11 @@ snapshots:
 
   '@rsdoctor/client@1.4.0': {}
 
-  '@rsdoctor/core@1.4.0(@rsbuild/core@1.6.14)(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.0.9)(webpack@5.104.1)':
+  '@rsdoctor/core@1.4.0(@rsbuild/core@1.6.14)(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.2.0)(webpack@5.104.1)':
     dependencies:
       '@rsbuild/plugin-check-syntax': 1.5.0(@rsbuild/core@1.6.14)
       '@rsdoctor/graph': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
-      '@rsdoctor/sdk': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.0.9)(webpack@5.104.1)
+      '@rsdoctor/sdk': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.2.0)(webpack@5.104.1)
       '@rsdoctor/types': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
       '@rsdoctor/utils': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
       browserslist-load-config: 1.0.1
@@ -5105,11 +5125,11 @@ snapshots:
       - '@rspack/core'
       - webpack
 
-  '@rsdoctor/rspack-plugin@1.4.0(@rsbuild/core@1.6.14)(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.0.9)(webpack@5.104.1)':
+  '@rsdoctor/rspack-plugin@1.4.0(@rsbuild/core@1.6.14)(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.2.0)(webpack@5.104.1)':
     dependencies:
-      '@rsdoctor/core': 1.4.0(@rsbuild/core@1.6.14)(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.0.9)(webpack@5.104.1)
+      '@rsdoctor/core': 1.4.0(@rsbuild/core@1.6.14)(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.2.0)(webpack@5.104.1)
       '@rsdoctor/graph': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
-      '@rsdoctor/sdk': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.0.9)(webpack@5.104.1)
+      '@rsdoctor/sdk': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.2.0)(webpack@5.104.1)
       '@rsdoctor/types': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
       '@rsdoctor/utils': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
     optionalDependencies:
@@ -5121,14 +5141,14 @@ snapshots:
       - utf-8-validate
       - webpack
 
-  '@rsdoctor/sdk@1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.0.9)(webpack@5.104.1)':
+  '@rsdoctor/sdk@1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(bufferutil@4.2.0)(webpack@5.104.1)':
     dependencies:
       '@rsdoctor/client': 1.4.0
       '@rsdoctor/graph': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
       '@rsdoctor/types': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
       '@rsdoctor/utils': 1.4.0(@rspack/core@1.6.7(@swc/helpers@0.5.17))(webpack@5.104.1)
       safer-buffer: 2.1.2
-      socket.io: 4.8.1(bufferutil@4.0.9)
+      socket.io: 4.8.1(bufferutil@4.2.0)
       tapable: 2.2.3
     transitivePeerDependencies:
       - '@rspack/core'
@@ -5213,15 +5233,15 @@ snapshots:
       '@rspack/binding-win32-ia32-msvc': 1.6.7
       '@rspack/binding-win32-x64-msvc': 1.6.7
 
-  '@rspack/cli@1.5.8(@rspack/core@1.6.7(@swc/helpers@0.5.17))(@types/express@4.17.24)(bufferutil@4.0.9)(webpack@5.104.1)':
+  '@rspack/cli@1.5.8(@rspack/core@1.6.7(@swc/helpers@0.5.17))(@types/express@4.17.24)(bufferutil@4.2.0)(webpack@5.104.1)':
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
       '@rspack/core': 1.6.7(@swc/helpers@0.5.17)
-      '@rspack/dev-server': 1.1.4(@rspack/core@1.6.7(@swc/helpers@0.5.17))(@types/express@4.17.24)(bufferutil@4.0.9)(webpack@5.104.1)
+      '@rspack/dev-server': 1.1.4(@rspack/core@1.6.7(@swc/helpers@0.5.17))(@types/express@4.17.24)(bufferutil@4.2.0)(webpack@5.104.1)
       colorette: 2.0.20
       exit-hook: 4.0.0
       pirates: 4.0.7
-      webpack-bundle-analyzer: 4.10.2(bufferutil@4.0.9)
+      webpack-bundle-analyzer: 4.10.2(bufferutil@4.2.0)
       yargs: 17.7.2
     transitivePeerDependencies:
       - '@types/express'
@@ -5240,14 +5260,14 @@ snapshots:
     optionalDependencies:
       '@swc/helpers': 0.5.17
 
-  '@rspack/dev-server@1.1.4(@rspack/core@1.6.7(@swc/helpers@0.5.17))(@types/express@4.17.24)(bufferutil@4.0.9)(webpack@5.104.1)':
+  '@rspack/dev-server@1.1.4(@rspack/core@1.6.7(@swc/helpers@0.5.17))(@types/express@4.17.24)(bufferutil@4.2.0)(webpack@5.104.1)':
     dependencies:
       '@rspack/core': 1.6.7(@swc/helpers@0.5.17)
       chokidar: 3.6.0
       http-proxy-middleware: 2.0.9(@types/express@4.17.24)
       p-retry: 6.2.1
-      webpack-dev-server: 5.2.2(bufferutil@4.0.9)(webpack@5.104.1)
-      ws: 8.18.3(bufferutil@4.0.9)
+      webpack-dev-server: 5.2.2(bufferutil@4.2.0)(webpack@5.104.1)
+      ws: 8.18.3(bufferutil@4.2.0)
     transitivePeerDependencies:
       - '@types/express'
       - bufferutil
@@ -5904,6 +5924,10 @@ snapshots:
     dependencies:
       node-gyp-build: 4.8.4
 
+  bufferutil@4.2.0:
+    dependencies:
+      node-gyp-build: 4.8.4
+
   bundle-name@4.1.0:
     dependencies:
       run-applescript: 7.1.0
@@ -6007,6 +6031,8 @@ snapshots:
   commander@12.1.0: {}
 
   commander@14.0.2: {}
+
+  commander@15.1.0: {}
 
   commander@2.20.3:
     optional: true
@@ -6244,7 +6270,7 @@ snapshots:
 
   engine.io-parser@5.2.3: {}
 
-  engine.io@6.6.5(bufferutil@4.0.9):
+  engine.io@6.6.5(bufferutil@4.2.0):
     dependencies:
       '@types/cors': 2.8.19
       '@types/node': 24.9.1
@@ -6254,7 +6280,7 @@ snapshots:
       cors: 2.8.5
       debug: 4.4.3
       engine.io-parser: 5.2.3
-      ws: 8.18.3(bufferutil@4.0.9)
+      ws: 8.18.3(bufferutil@4.2.0)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -6906,7 +6932,7 @@ snapshots:
 
   ipaddr.js@2.2.0: {}
 
-  ipaddr.js@2.3.0: {}
+  ipaddr.js@2.5.0: {}
 
   irregular-plurals@3.5.0: {}
 
@@ -8149,10 +8175,10 @@ snapshots:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 4.0.0
 
-  socket.io-adapter@2.5.6(bufferutil@4.0.9):
+  socket.io-adapter@2.5.6(bufferutil@4.2.0):
     dependencies:
       debug: 4.4.3
-      ws: 8.18.3(bufferutil@4.0.9)
+      ws: 8.18.3(bufferutil@4.2.0)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -8165,14 +8191,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.1(bufferutil@4.0.9):
+  socket.io@4.8.1(bufferutil@4.2.0):
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
       cors: 2.8.5
       debug: 4.3.7
-      engine.io: 6.6.5(bufferutil@4.0.9)
-      socket.io-adapter: 2.5.6(bufferutil@4.0.9)
+      engine.io: 6.6.5(bufferutil@4.2.0)
+      socket.io-adapter: 2.5.6(bufferutil@4.2.0)
       socket.io-parser: 4.2.5
     transitivePeerDependencies:
       - bufferutil
@@ -8680,7 +8706,7 @@ snapshots:
 
   webidl-conversions@3.0.1: {}
 
-  webpack-bundle-analyzer@4.10.2(bufferutil@4.0.9):
+  webpack-bundle-analyzer@4.10.2(bufferutil@4.2.0):
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
       acorn: 8.15.0
@@ -8693,7 +8719,7 @@ snapshots:
       opener: 1.5.2
       picocolors: 1.1.1
       sirv: 2.0.4
-      ws: 7.5.10(bufferutil@4.0.9)
+      ws: 7.5.10(bufferutil@4.2.0)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8709,7 +8735,7 @@ snapshots:
     optionalDependencies:
       webpack: 5.104.1
 
-  webpack-dev-server@5.2.2(bufferutil@4.0.9)(webpack@5.104.1):
+  webpack-dev-server@5.2.2(bufferutil@4.2.0)(webpack@5.104.1):
     dependencies:
       '@types/bonjour': 3.5.13
       '@types/connect-history-api-fallback': 1.5.4
@@ -8738,7 +8764,7 @@ snapshots:
       sockjs: 0.3.24
       spdy: 4.0.2
       webpack-dev-middleware: 7.4.5(webpack@5.104.1)
-      ws: 8.18.3(bufferutil@4.0.9)
+      ws: 8.18.3(bufferutil@4.2.0)
     optionalDependencies:
       webpack: 5.104.1
     transitivePeerDependencies:
@@ -8825,13 +8851,21 @@ snapshots:
       imurmurhash: 0.1.4
       signal-exit: 4.1.0
 
-  ws@7.5.10(bufferutil@4.0.9):
+  ws@7.5.10(bufferutil@4.2.0):
     optionalDependencies:
-      bufferutil: 4.0.9
+      bufferutil: 4.2.0
 
   ws@8.18.3(bufferutil@4.0.9):
     optionalDependencies:
       bufferutil: 4.0.9
+
+  ws@8.18.3(bufferutil@4.2.0):
+    optionalDependencies:
+      bufferutil: 4.2.0
+
+  ws@8.22.2(bufferutil@4.2.0):
+    optionalDependencies:
+      bufferutil: 4.2.0
 
   wsl-utils@0.1.0:
     dependencies:
