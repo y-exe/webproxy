@@ -1,8 +1,8 @@
-name = "scramjet-japanese"
+name = "webproxy"
 main = "cloudflare/worker/worker.ts"
 compatibility_date = "2026-06-02"
 workers_dev = true
 
 [vars]
 VPS_ORIGIN = "https://papi.yexe.xyz"
-ALLOWED_ORIGIN = "https://y-proxy.pages.dev"
+ALLOWED_ORIGIN = "https://yproxy.pages.dev"
