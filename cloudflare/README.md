@@ -6,7 +6,7 @@ Use these paths in Cloudflare Git integrations.
 Pages build command: pnpm pages:build:cloudflare
 Pages output directory: cloudflare/pages
 Pages root directory: /
-Worker name: scramjet-japanese
+Worker name: webproxy
 Worker root directory: /
 Worker build command: leave empty
 Worker deploy command: npx wrangler deploy
@@ -15,12 +15,14 @@ Worker deploy command: npx wrangler deploy
 Public endpoints:
 
 ```txt
-Frontend: https://y-proxy.pages.dev
-Worker: https://scramjet-japanese.yexe.workers.dev
-VPS bridge: https://papi.yexe.xyz
+Frontend: https://yproxy.pages.dev
+Worker: https://webproxy.yexe.workers.dev
+VPS bridge (Worker-facing only): https://papi.yexe.xyz
 ```
 
-`papi.yexe.xyz` is only the Worker-facing bridge.
+`papi.yexe.xyz` is only the Worker-facing bridge. The frontend never references
+it; all traffic flows through the `webproxy` Worker. Outbound fetching from the
+backend egresses via the VPS IP (SOCKS5), never from the home IP.
 
 Recommended Pages environment variables:
 

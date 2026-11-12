@@ -8,14 +8,17 @@ VPS reverse proxy.
 
 ```txt
 browser
-  -> https://y-proxy.pages.dev for static frontend files
-  -> https://scramjet-japanese.yexe.workers.dev for /api/*, /wisp/*, /healthz
-  -> https://papi.yexe.xyz as the Worker-facing VPS origin
-  -> home PC Docker backend
+  -> https://yproxy.pages.dev          static frontend (Cloudflare Pages)
+  -> https://webproxy.yexe.workers.dev thin reverse proxy Worker (no business logic)
+  -> https://papi.yexe.xyz             VPS nginx (Cloudflare-only ingress)
+  -> k3s Traefik on yexeserver         proxy-edge-backend pod (the real backend)
+  -> outbound fetching                 via SOCKS5 on the VPS (egress IP = VPS)
 ```
 
 `papi.yexe.xyz` is only the Worker-facing bridge. Do not present it as the
-public user URL.
+public user URL. Nothing in the frontend or the Worker's public surface may
+reference `papi.yexe.xyz` directly; the only place it appears is the Worker's
+`VPS_ORIGIN` variable (server-side, not exposed to visitors).
 
 ## Frontend on Cloudflare Pages
 
@@ -48,16 +51,16 @@ service worker scope at `/`.
 The committed production env points the Pages frontend at the Worker:
 
 ```env
-VITE_API_ORIGIN=https://scramjet-japanese.yexe.workers.dev
-VITE_WISP_URL=wss://scramjet-japanese.yexe.workers.dev/wisp/
+VITE_API_ORIGIN=https://webproxy.yexe.workers.dev
+VITE_WISP_URL=wss://webproxy.yexe.workers.dev/wisp/
 ```
 
-Because `y-proxy.pages.dev` and `scramjet-japanese.yexe.workers.dev` are
-separate origins, the Worker must allow `https://y-proxy.pages.dev` through CORS.
+Because `yproxy.pages.dev` and `webproxy.yexe.workers.dev` are
+separate origins, the Worker must allow `https://yproxy.pages.dev` through CORS.
 
 ## Worker Git deploy
 
-Connect the existing Worker named `scramjet-japanese` to the same GitHub
+Connect the existing Worker named `webproxy` to the same GitHub
 repository. Use the repository root so Wrangler can read the root
 `wrangler.toml`:
 
@@ -79,7 +82,7 @@ It is already configured for the current VPS bridge:
 
 ```toml
 VPS_ORIGIN = "https://papi.yexe.xyz"
-ALLOWED_ORIGIN = "https://y-proxy.pages.dev"
+ALLOWED_ORIGIN = "https://yproxy.pages.dev"
 ```
 
 If the Worker is on a different origin than Pages, set `ALLOWED_ORIGIN` too.
@@ -90,46 +93,35 @@ With the current `workers.dev` / `pages.dev` split, no custom route is required
 yet. The Worker is directly available at:
 
 ```txt
-https://scramjet-japanese.yexe.workers.dev
+https://webproxy.yexe.workers.dev
 ```
 
 If a custom domain is added later, route `/api/*`, `/wisp/*`, and `/healthz` to
 the Worker and let Pages own every other path.
 
-## Home PC backend
+## Backend (yexeserver / k3s)
 
-Run the backend-only server in the Docker container or directly on the host:
+The production backend (`proxy-edge-backend`) runs as a k3s Deployment on
+`yexeserver` and is managed by the GitOps repo (`y-exe/vps`, Argo auto-sync).
+The image is built by GH Actions from this repo's `Dockerfile.edge-backend` and
+pushed to `ghcr.io/y-exe/proxy-edge-backend` (tags: `latest` + `sha-<short>`).
 
-```sh
-pnpm backend:edge
-```
+To roll out a backend change:
 
-Container build/run example:
+1. Commit + push to `main` (paths `server/**`, `pnpm-lock.yaml`, etc. trigger the
+   GHCR build).
+2. Update `newTag` in `apps/proxy-edge-backend/kustomization.yaml` of the vps
+   repo and push. Argo syncs the Deployment.
 
-```sh
-docker build -f Dockerfile.edge-backend -t scramjet-edge-backend .
-docker run --rm -p 4143:4143 --env-file .env scramjet-edge-backend
-```
-
-On this Windows host, use the redeploy script after backend changes:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/redeploy-edge-backend.ps1
-```
-
-It rebuilds `scramjet-edge-backend:latest`, replaces the
-`proxy-edge-backend` container, keeps the `proxy-edge-cookie-store` volume, and
-checks `http://127.0.0.1:4143/healthz`.
-
-It listens on `EDGE_BACKEND_PORT` or `PORT`, defaulting to `4143`, and exposes:
+The pod listens on port 4143 and exposes:
 
 ```txt
 /api/cookies/*
-/wisp/*
+/wisp/*          (WebSocket)
 /healthz
 ```
 
-The backend is hardened for public proxy operation:
+Hardening for public proxy operation:
 
 ```txt
 Wisp destination ports: 80, 443 only
@@ -138,42 +130,46 @@ Direct IP destinations: disabled
 Private and loopback IP destinations: disabled
 Per-host stream limit: WISP_STREAM_LIMIT_PER_HOST, default 8
 Total stream limit: WISP_STREAM_LIMIT_TOTAL, default 64
-DNS servers: WISP_DNS_SERVERS, default 1.1.1.1,1.0.0.1
 ```
 
-Set `EDGE_SHARED_SECRET` on both the Docker backend and Cloudflare Worker to
-block direct use of `papi.yexe.xyz`. The Worker forwards the secret as
-`x-edge-secret`; direct requests without it receive `403`.
+### VPS-IP egress (SOCKS5)
 
-Do not commit the real secret. Keep it in `.env` for Docker and in Cloudflare
-Worker environment secrets or variables.
-
-## VPS reverse proxy shape
-
-The VPS should proxy Worker-facing backend traffic to the home PC backend. With
-the default backend port, add a reverse SSH forward like:
+All outbound fetching (viewing proxied sites) leaves through the VPS so the
+home IP is never exposed to target sites, even under abuse:
 
 ```txt
-4143:127.0.0.1:4143
+EGRESS_SOCKS=10.77.0.1:1080   (set in apps/proxy-edge-backend/app.yaml)
 ```
 
-`C:\Users\yexe\code\vps.bat` launches `vps-watchdog.ps1`, so add the new port
-there if this app should ride the same existing tunnel system.
+- `10.77.0.1:1080` is `socks-egress.service` (microsocks) on the VPS, bound to
+  the WireGuard interface only.
+- `server/egressSocks.ts` patches `net`/`tls` at the prototype level: public
+  TCP/TLS connects are routed through SOCKS5; the proxy is unreachable ->
+  connection fails (fail-closed, never falls back to a direct connect).
+- While `EGRESS_SOCKS` is set, wisp hands hostnames to the proxy
+  (`ATYP_DOMAIN`) so DNS is resolved on the VPS as well — no DNS leaks from the
+  home network.
+- The k3s NetworkPolicy `allow-wg-egress-socks` opens only `10.77.0.1:1080/tcp`
+  for this pod; UFW on the VPS allows 1080 only from the WireGuard subnet.
 
-Example nginx shape on the VPS:
+### Local development (legacy)
 
-```nginx
-location / {
-    proxy_pass http://127.0.0.1:4143;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $http_x_forwarded_host;
-    proxy_set_header X-Forwarded-Host $http_x_forwarded_host;
-    proxy_set_header X-Forwarded-Proto https;
-    proxy_set_header X-Real-IP $remote_addr;
-}
+Run the backend-only server directly on the host:
+
+```sh
+pnpm backend:edge
 ```
+
+`scripts/redeploy-edge-backend.ps1` predates the k3s cutover and only rebuilds
+the local Windows Docker container; it is not part of production anymore.
+
+## papi.yexe.xyz (VPS ingress)
+
+nginx on the VPS terminates TLS for `papi.yexe.xyz` and forwards to the k3s
+Traefik ingress (`10.77.0.2:80`), which routes to the backend Service. The
+server block includes the `cloudflare-only` snippet: direct requests not coming
+from Cloudflare edge IPs receive `403`, so `papi.yexe.xyz` can only be reached
+through the `webproxy` Worker.
 
 Keep the Worker transparent: do not rewrite HTML or buffer response bodies at
 the Worker layer.
